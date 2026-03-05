@@ -34,6 +34,10 @@ def get_prog_bar(percent):
 def get_progress(chat_id):
     return jsonify(progress.get(chat_id, {"status": "idle"}))
 
+@web.route('/')
+def index_handler():
+    return "HELLO UNHEX!"
+
 @app.on_message(filters.command("clear"))
 async def clear_handler(_, m):
     try:
