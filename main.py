@@ -89,12 +89,12 @@ async def clear_handler(_, m):
             if not fid:
                 continue
 
-            exists = col.find_one({"chat": chat_id, "fid": fid})
+            exists = col.find_one({"fid": fid})
 
             if exists:
                 to_delete.append(msg.id)
             else:
-                col.insert_one({"chat": chat_id, "fid": fid})
+                col.insert_one({"chat": chat_id, "chat_name": getattr(msg.chat, "title", str(chat_id)), "fid": fid})
 
             if len(to_delete) >= 100:
                 try:
@@ -141,13 +141,13 @@ async def watcher(_, m):
     fid = get_media(m)
     if not fid: return
 
-    exists = col.find_one({"chat": m.chat.id, "fid": fid})
+    exists = col.find_one({"fid": fid})
     if exists:
         try:
             await m.delete()
         except: pass
     else:
-        col.insert_one({"chat": m.chat.id, "fid": fid})
+        col.insert_one({"chat": m.chat.id, "chat_name": getattr(m.chat, "title", str(m.chat.id)), "fid": fid})
 
 @app.on_message(filters.command("uid"))
 async def get_uid_handler(_, m):
@@ -160,6 +160,29 @@ async def get_uid_handler(_, m):
         await m.reply(f"🆔 **File Unique ID:**\n\n`{fid}`")
     else:
         await m.reply("❌ **Could not find a valid unique ID.**")
+
+
+
+@app.on_message(filters.command("channels"))
+async def channels_handler(_, m):
+    channels = col.distinct("chat")
+    if not channels:
+        return await m.reply("❌ No scanned channels found.")
+    text = "📂 Scanned Channels\n\n"
+    for cid in channels:
+        data = col.find_one({"chat": cid}) or {}
+        text += f'• {data.get("chat_name","Unknown")}\n`{cid}`\n\n'
+    await m.reply(text)
+
+@app.on_message(filters.command("removechannel"))
+async def remove_channel_handler(_, m):
+    try:
+        cid = int(m.command[1])
+    except:
+        return await m.reply("Usage:\n/removechannel -100xxxxxxxxxx")
+
+    result = col.delete_many({"chat": cid})
+    await m.reply(f"✅ Channel removed.\nDeleted {result.deleted_count} records.")
 
 def run_flask():
     web.run("0.0.0.0", 8000)
