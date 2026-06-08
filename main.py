@@ -7,8 +7,8 @@ import time
 import asyncio
 import os
 
-BOT_TOKEN = os.environ.get("BOT_TOKEN", '')
-MONGO_DB_URI = os.environ.get("MONGO_DB_URI")
+BOT_TOKEN = os.environ.get("BOT_TOKEN", '8602002835:AAFuoAr5eCVUkgbQxZtUoK3nHfYwfSF5so4')
+MONGO_DB_URI = os.environ.get("")
 mongo = MongoClient(MONGO_DB_URI)
 db = mongo["tg_dedup"]
 col = db["files"]
