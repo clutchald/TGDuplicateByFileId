@@ -8,7 +8,7 @@ import asyncio
 import os
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN", '8602002835:AAFuoAr5eCVUkgbQxZtUoK3nHfYwfSF5so4')
-MONGO_DB_URI = os.environ.get("")
+MONGO_DB_URI = os.environ.get("mongodb+srv://RAJ:RAJ@outlook.itqomxm.mongodb.net/?appName=outlook")
 mongo = MongoClient(MONGO_DB_URI)
 db = mongo["tg_dedup"]
 col = db["files"]
